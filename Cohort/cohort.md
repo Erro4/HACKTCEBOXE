@@ -173,7 +173,7 @@ This is exactly what the wildcard SAN noted during initial recon is useful for: 
 ### Adding the hidden subdomain to `/etc/hosts`
 
 ```bash
-echo "<TARGET_IP> nb-1be3782a8afd3ad5.cohort.htb" | sudo tee -a /etc/hosts
+echo "<TARGET_IP> ********************.cohort.htb" | sudo tee -a /etc/hosts
 ```
 
 ---
@@ -362,7 +362,7 @@ The **`euid=0(root)`** confirms that, while the real `uid` is still `marimo`, th
 .suid_bash-5.2# cat /root/root.txt
 ```
 
-**Result:** `<FLAG_ROOT>`
+**Result:** `<FLAG_ROOT->`
 
 ---
 
@@ -375,8 +375,6 @@ The **`euid=0(root)`** confirms that, while the real `uid` is still `marimo`, th
 - **TOCTOU vulnerabilities** in privileged package managers (PackageKit, in this case) are particularly dangerous because they exploit the window between checking and using files — the fix requires atomic operations (checking and using the same file descriptor, without reopening the path).
 
 ---
-
-
 
 ## Tools Used
 

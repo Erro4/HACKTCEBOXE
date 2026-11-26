@@ -4,7 +4,6 @@
 
 ---
 
-
 ## Overview
 
 **Management** is a Linux machine that chains together several misconfigurations and poorly protected secrets:
@@ -371,7 +370,7 @@ Password: ********
 The decrypted password was tried against the system user `owen` (a name previously seen while enumerating `/home`):
 
 ```bash
-ssh owen@<TARGET_IP>
+ssh ***@<TARGET_IP>
 # password: WpczC40GhTbk
 ```
 
@@ -458,7 +457,7 @@ rdiff-backup \
 cat /tmp/root_backup/root.txt
 ```
 
-**Result:** `<FLAG_ROOT>`
+**Result:** `<FLAG_ROOT->`
 
 ---
 

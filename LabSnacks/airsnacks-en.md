@@ -96,7 +96,7 @@ Useful for identifying the server (`nginx`), session cookies set (`Set-Cookie`),
 ### Following redirects and seeing the full chain
 
 ```bash
-curl -sk -L -D - -o /dev/null https://airsnacks.htb/
+curl -sk -L -D -o /dev/null https://airsnacks.htb/
 ```
 
 `-D -` prints the headers of each hop; `-o /dev/null` discards the body (we only want to see the redirect path, e.g. HTTP→HTTPS).
@@ -582,5 +582,3 @@ ls -la /tmp/rootbash
 - Abuse of systemd path units + unsafe `eval` in a shell script for escalation to root
 
 ---
-
-*Writeup carried out in an authorized lab environment (HackTheBox). Flags redacted per community convention.*

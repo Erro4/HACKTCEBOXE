@@ -237,8 +237,8 @@ echo ********************* | base64 -d
 ## Pivoting to the `bob` User
 
 ```bash
-ssh bob@<TARGET_IP>
-# password: CorrectHorseBatteryStaple
+ssh ***@<TARGET_IP>
+# password:*************
 ```
 
 ---
