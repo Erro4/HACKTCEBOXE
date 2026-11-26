@@ -387,18 +387,6 @@ cat /root/root.txt
 
 ---
 
-## Remediation
-
-| Issue | Fix |
-|---|---|
-| CVE-2026-123158 (SSHole) | Upgrade OpenSSH to a patched version; on musl-libc systems, ensure `sshd` is built with PAM, or apply the upstream patch fixing `crypt()`'s handling of oversized passwords |
-| Accounts with `*` password hash | Ensure service accounts with no real password have `PasswordAuthentication no` explicitly configured, or use key-only authentication |
-| Credentials in browser profiles | Never store production system credentials in a browser's password manager on a server; use dedicated secrets vaults |
-| CVE-2026-41567 (Docker overlay) | Upgrade Docker to a patched version; never let uploads from not-fully-trusted users be decompressed directly by processes with access to the host filesystem; isolate build/deploy pipelines in fully sandboxed environments |
-| `/deploy` endpoint with no content validation | Strictly validate uploaded file contents before any decompression operation; never trust a file's name/extension as a guarantee of its actual content |
-
----
-
 ## Tools Used
 
 - `nmap` — port and service reconnaissance
